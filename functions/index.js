@@ -607,6 +607,53 @@ async function getFcmTokens(sender, subscribers) {
     return tokens
 }
 
+exports.getProjectRecap = functions.https.onRequest(async (req, res) => {
+    try {
+        let projectId = req.query['projectId']
+        let params = req.query['params'];
+
+        let recap = {
+            'document': [],
+            'order': [],
+            'agenda': [],
+        };
+
+        if (params) {
+            let entities = params.split(',');
+            for (let i = 0; i < entities.length; i++) {
+                let entity = entities[i];
+                switch (entity) {
+                    case 'document':
+                        await admin.firestore().collection('Documents').where('project.id', '==', projectId).get().then((querysnapshot) => {
+                            querysnapshot.forEach((doc) => {
+                                recap.document.push(doc.data());
+                            })
+                        })
+                        break;
+                    case 'order':
+                        await admin.firestore().collection('Orders').where('project.id', '==', projectId).get().then((querysnapshot) => {
+                            querysnapshot.forEach((doc) => {
+                                recap.order.push(doc.data());
+                            })
+                        })
+                        break;
+                    case 'agenda':
+                        await admin.firestore().collection('Agenda').where('project.id', '==', projectId).get().then((querysnapshot) => {
+                            querysnapshot.forEach((doc) => {
+                                recap.agenda.push(doc.data());
+                            })
+                        })
+                        break;
+                }
+            }
+        }
+
+        res.send(recap);
+    } catch (err) {
+        res.status(500).send({ message: err.message || "Something wrong while retrieving project recap." });
+    }
+});
+
 
 
 
