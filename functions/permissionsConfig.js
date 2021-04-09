@@ -63,8 +63,8 @@ module.exports.getPermissions = function (token) {
 
     if (token.admin)
         return {
-            projects: { canCreate: true, canRead: true, canUpdate: true, canDelete: true },
-            documents: { canCreate: true, canRead: true, canUpdate: true, canDelete: true },
+            projects: { canCreate: true, canRead: true, canUpdate: true, canDelete: true, },
+            documents: { canCreate: true, canRead: true, canUpdate: true, canDelete: true, },
             orders: { canCreate: true, canRead: true, canUpdate: true, canDelete: true },
             users: { canCreate: true, canRead: true, canUpdate: true, canDelete: true },
             teams: { canCreate: true, canRead: true, canUpdate: true, canDelete: true },
@@ -83,22 +83,23 @@ module.exports.getPermissions = function (token) {
             requests: { canCreate: true, canRead: true, canUpdate: false, canDelete: false },
         }
 
-    else if (token.com)
+    else if (token.tech)
         return {
             projects: { canCreate: true, canRead: true, canUpdate: true, canDelete: true },
             documents: { canCreate: true, canRead: true, canUpdate: true, canDelete: false },
-            orders: { canCreate: false, canRead: false, canUpdate: false, canDelete: false }, //No access
+            orders: { canCreate: true, canRead: true, canUpdate: true, canDelete: true },
             users: { canCreate: false, canRead: true, canUpdate: false, canDelete: false }, //No access (profile read only)
             teams: { canCreate: false, canRead: true, canUpdate: false, canDelete: false }, //No access (read only)
             messages: { canCreate: true, canRead: true, canUpdate: false, canDelete: false },
             requests: { canCreate: true, canRead: true, canUpdate: false, canDelete: false },
         }
 
-    else if (token.tech)
+
+    else if (token.com)
         return {
             projects: { canCreate: true, canRead: true, canUpdate: true, canDelete: true },
             documents: { canCreate: true, canRead: true, canUpdate: true, canDelete: false },
-            orders: { canCreate: true, canRead: true, canUpdate: true, canDelete: true },
+            orders: { canCreate: false, canRead: false, canUpdate: false, canDelete: false }, //No access
             users: { canCreate: false, canRead: true, canUpdate: false, canDelete: false }, //No access (profile read only)
             teams: { canCreate: false, canRead: true, canUpdate: false, canDelete: false }, //No access (read only)
             messages: { canCreate: true, canRead: true, canUpdate: false, canDelete: false },

@@ -1,0 +1,5 @@
+
+Tasks: 
++ Check why onUpdateUser is too slow..
++ handle client update (project objects...)
++ handle project (name, step) update

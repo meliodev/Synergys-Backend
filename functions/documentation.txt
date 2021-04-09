@@ -1,0 +1,81 @@
+Notifications:
+- Projects:
+ + onCreate: subscribers - {createdBy} + client
+ + onUpdate (not always): subscribers - {editedBy} + client
+ + onArchive: subscribers - {editedBy}
+
+- Agenda: (important)
+ + onCreate:
+ + onUpdate: 
+ + onDelete:
+
+- Chats:
+ + onCreate:
+
+- Clients:
+ + onCreate
+
+- Documents:
+- Orders
+- Users
+
+------------------------------------------------------------------------------------------
+Emails:
+
+
+
+
+
+
+/* onCreate
+Admin: Vous êtes collaborateur dans le projet Y
+DC: Vous êtes collaborateur dans le projet Y
+RT: Vous êtes collaborateur dans le projet Y
+Commercial: Vous êtes collaborateur dans le projet Y
+Poseur: Vous êtes collaborateur dans le projet Y
+Client: Votre projet Y a été crée
+(Don't send to createdBy)
+*/
+
+/* onArchive
+Admin: Le projet Y a été archivé
+DC:  Le projet Y a été archivé
+RT:  Le projet Y a été archivé
+Commercial: Le projet Y a été archivé
+Poseur: Le projet Y a été archivé
+Client: Votre projet Y a été archivé
+(Don't send to editedBy)
+*/
+
+/* onUpdate:state
+Admin: Le projet 'ID' est 'Etat'
+DC:  Le projet 'ID' est 'Etat'
+RT: Le projet 'ID' est 'Etat'
+Commercial: Le projet 'ID' est 'Etat'
+Poseur: Le projet 'ID' est 'Etat'
+Client: Le projet 'ID' est 'Etat'
+(Don't send to editedBy)
+*/
+
+/* onUpdate:step
+Admin: Le projet 'ID' est phase 'phase'
+DC:  Le projet 'ID' est phase 'phase'
+RT: Le projet 'ID' est phase 'phase'
+Commercial: Le projet 'ID' est phase 'phase'
+Poseur: Le projet 'ID' est phase 'phase'
+Client: Le projet 'ID' est phase 'phase'
+(Don't send to editedBy)
+
+/* onUpdate:subscribers
+old_Commercial: Vous n'êtes plus un collaborateur dans le projet 'ID'
+old_Poseur: Vous n'êtes plus un collaborateur dans le projet 'ID'
+new_Commercial: Vous êtes collaborateur dans le projet Y
+new_Poseur: Vous êtes collaborateur dans le projet Y
+
+/* onUpdate:address
+Admin: L'adresse du projet 'ID' à été modifiée
+DC: L'adresse du projet 'ID' à été modifiée
+RT: L'adresse du projet 'ID' à été modifiée
+Commercial: L'adresse du projet 'ID' à été modifiée
+Poseur: L'adresse du projet 'ID' à été modifiée
+Client: L'adresse du projet 'ID' à été modifiée
