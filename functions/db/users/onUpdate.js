@@ -2,86 +2,81 @@
 
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
-const { updateUserFullNameOnAllDocs, getRoleValue } = require('../../utils/db')
+const { handleUserDenormalization } = require('../../utils/db')
 
 function setUpdatesDatas(userId) {
     const updatesDatas = [
         //Agenda
-        { query: { collection: 'Agenda', field: 'assignedTo.id', operation: '==', value: userId }, updatePath: 'assignedTo.fullName', fieldType: 'string' },
-        { query: { collection: 'Agenda', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy.fullName', fieldType: 'string' },
-        { query: { collection: 'Agenda', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy.fullName', fieldType: 'string' },
-        { query: { collection: 'Agenda', field: 'project.subscribers', operation: 'array-contains', value: userObject }, updatePath: 'project.subscribers', fieldType: 'array' },
+        { query: { collection: 'Agenda', field: 'assignedTo.id', operation: '==', value: userId }, updatePath: 'assignedTo', updateType: 'object' },
+        { query: { collection: 'Agenda', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy', updateType: 'object' },
+        { query: { collection: 'Agenda', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy', updateType: 'object' },
         //Chats > Messages
-        { query: { collection: 'Chats', field: 'user._id', operation: '==', value: userId }, updatePath: 'user.name', fieldType: 'string' },
-        { query: { collection: 'ChatMessages', isCollectionGroup: true, field: 'user._id', operation: '==', value: userId }, updatePath: 'user.name', fieldType: 'string' },
-        //Documents
-        { query: { collection: 'Documents', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy.fullName', fieldType: 'string' },
-        { query: { collection: 'Documents', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy.fullName', fieldType: 'string' },
-        { query: { collection: 'Documents', field: 'project.subscribers', operation: 'array-contains', value: userObject }, updatePath: 'project.subscribers', fieldType: 'array' },
+        { query: { collection: 'Chats', field: 'user.id', operation: '==', value: userId }, updatePath: 'user', updateType: 'object' },
+        { query: { collection: 'ChatMessages', isCollectionGroup: true, field: 'user.id', operation: '==', value: userId }, updatePath: 'user', updateType: 'object' },
+        // //Documents
+        { query: { collection: 'Documents', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy', updateType: 'object' },
+        { query: { collection: 'Documents', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy', updateType: 'object' },
+        { query: { collection: 'Documents', field: 'sign_proofs_data.signedBy.id', operation: '==', value: userId }, updatePath: 'sign_proofs_data.signedBy', updateType: 'object' },
+        { query: { collection: 'AttachmentHistory', isCollectionGroup: true, field: 'sign_proofs_data.signedBy.id', operation: '==', value: userId }, updatePath: 'sign_proofs_data.signedBy', updateType: 'object' },
         //Messages
-        { query: { collection: 'Messages', field: 'sender', operation: '==', value: userId }, updatePath: 'sender.fullName', fieldType: 'string' },
-        { query: { collection: 'Messages', field: 'receivers', operation: 'array-contains', value: userObject }, updatePath: 'receivers', fieldType: 'array' },
-        { query: { collection: 'AllMessages', isCollectionGroup: true, field: 'sender', operation: '==', value: userId }, updatePath: 'sender.fullName', fieldType: 'string' },
-        { query: { collection: 'AllMessages', isCollectionGroup: true, field: 'receivers', operation: 'array-contains', value: userObject }, updatePath: 'receivers', fieldType: 'array' },
-        { query: { collection: 'AllMessages', isCollectionGroup: true, field: 'speakers', operation: 'array-contains', value: userObject }, updatePath: 'speakers', fieldType: 'array' },
+        { query: { collection: 'Messages', field: 'sender.id', operation: '==', value: userId }, updatePath: 'sender', updateType: 'object' },
+        { query: { collection: 'Messages', field: 'receiversIds', operation: 'array-contains', value: userId }, updatePath: 'receivers', updateType: 'array.object' },
+        { query: { collection: 'Messages', field: 'speakersIds', operation: 'array-contains', value: userId }, updatePath: 'speakers', updateType: 'array.object' },
+        // { query: { collection: 'AllMessages', isCollectionGroup: true, field: 'oldMessages.sender.id', operation: '==', value: userId }, updatePath: 'oldMessages.sender', updateType: 'array.object' },
+        { query: { collection: 'AllMessages', isCollectionGroup: true, field: 'sender.id', operation: '==', value: userId }, updatePath: 'sender', updateType: 'object' },
+        { query: { collection: 'AllMessages', isCollectionGroup: true, field: 'receiversIds', operation: 'array-contains', value: userId }, updatePath: 'receivers', updateType: 'array.object' },
+        { query: { collection: 'AllMessages', isCollectionGroup: true, field: 'speakersIds', operation: 'array-contains', value: userId }, updatePath: 'speakers', updateType: 'array.object' },
         //Orders
-        { query: { collection: 'Orders', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy.fullName', fieldType: 'string' },
-        { query: { collection: 'Orders', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy.fullName', fieldType: 'string' },
-        { query: { collection: 'Orders', field: 'project.subscribers', operation: 'array-contains', value: userObject }, updatePath: 'project.subscribers', fieldType: 'array' },
+        { query: { collection: 'Orders', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy', updateType: 'object' },
+        { query: { collection: 'Orders', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy', updateType: 'object' },
         //Products
-        { query: { collection: 'Products', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy.fullName', fieldType: 'string' },
-        { query: { collection: 'Products', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy.fullName', fieldType: 'string' },
+        { query: { collection: 'Products', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy', updateType: 'object' },
+        { query: { collection: 'Products', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy', updateType: 'object' },
         //Projects
-        { query: { collection: 'Projects', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy.fullName', fieldType: 'string' },
-        { query: { collection: 'Projects', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy.fullName', fieldType: 'string' },
-        { query: { collection: 'Documents', field: 'subscribers', operation: 'array-contains', value: userObject }, updatePath: 'subscribers', fieldType: 'array' },
-        //Requests
-        { query: { collection: 'Requests', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy.fullName', fieldType: 'string' },
-        { query: { collection: 'Requests', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy.fullName', fieldType: 'string' },
+        { query: { collection: 'Projects', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy', updateType: 'object' },
+        { query: { collection: 'Projects', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy', updateType: 'object' },
+        { query: { collection: 'Projects', field: 'comContact.id', operation: '==', value: userId }, updatePath: 'comContact', updateType: 'object' },
+        { query: { collection: 'Projects', field: 'techContact.id', operation: '==', value: userId }, updatePath: 'techContact', updateType: 'object' },
+        { query: { collection: 'Projects', field: 'bill.closedBy.id', operation: '==', value: userId }, updatePath: 'bill.closedBy', updateType: 'object' },
+        //Requests (can be created by user or client)
+        { query: { collection: 'Requests', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy', updateType: 'object' },
+        { query: { collection: 'Requests', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy', updateType: 'object' },
         //Teams
-        { query: { collection: 'Teams', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy.fullName', fieldType: 'string' },
-        { query: { collection: 'Teams', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy.fullName', fieldType: 'string' },
+        { query: { collection: 'Teams', field: 'createdBy.id', operation: '==', value: userId }, updatePath: 'createdBy', updateType: 'object' },
+        { query: { collection: 'Teams', field: 'editedBy.id', operation: '==', value: userId }, updatePath: 'editedBy', updateType: 'object' },
     ]
-
     return updatesDatas
 }
-
 
 exports.onUpdateUser = functions.firestore
     .document('Users/{userId}')
     .onUpdate(async (change, context) => {
-
         const { userId } = context.params
         const after = change.after.data()
         const before = change.before.data()
-        const nomChanged = before.nom !== after.nom
-        const prenomChanged = before.prenom !== after.prenom
-        const denomChanged = before.denom !== after.denom
-        const noChange = !nomChanged && !prenomChanged && !denomChanged
-
-        if (noChange) return null
-
-        //1. UPDATE AUTH DISPLAYNAME
-        var displayName = before.isPro ? after.denom : `${after.prenom} ${after.nom}`
-        const user = await admin.auth().updateUser(userId, { displayName })
-
-        //2. UPDATE FULLNAME FIELD ON ALL DOCUMENTS OF ALL COLLECTIONS CONTAINING THIS USER.
-        const email = user.email
-        const previousFullName = before.isPro ? `${before.denom}` : `${before.prenom} ${before.nom}`
-        const roleId = Object.keys(user.customClaims)[0]
-        const role = getRoleValue(roleId)
-
-        const userObject = {
-            id: userId,
-            fullName: previousFullName,
-            email,
-            role
+        const userDeleted = !before.deleted && after.deleted
+        if (userDeleted) {
+            return admin.auth().deleteUser(userId)
         }
-
-        const updatesDatas = setUpdatesDatas(userId)
-
-        const response = await updateUserFullNameOnAllDocs(updatesDatas, displayName)
-        console.log('RESPONSE', response)
-
-        return response
+        await handleUserDenormalization(userId, before, after, setUpdatesDatas)
+        return
     })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

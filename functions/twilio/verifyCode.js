@@ -8,11 +8,9 @@ exports.verifyCode = functions.https.onRequest(async (req, res) => {
         .verificationChecks
         .create({ to: req.body.data.phoneNumber, code: req.body.data.code })
         .then(verification_check => {
-            console.log(verification_check.status)
             res.status(200).send({ data: { status: verification_check.status } })
         })
         .catch((err) => {
-            console.log(err)
             res.status(200).send({ data: { error: err } })
-        });
+        })
 })

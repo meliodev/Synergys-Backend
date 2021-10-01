@@ -1,0 +1,11 @@
+{
+  "twilio": {
+    "accountsid": "AC607d3bd99e19c07dc7b16b9bd092c8a3",
+    "authtoken": "45f6baf4da10b3ff79ce9300bb661296",
+    "serviceid": "VA2268ccd7f5e55754739e7eaa7b1d0795"
+  },
+  "nodemailer": {
+    "sessecretkey": "meliodas2020",
+    "sesaccesskey": "salimlyoussi1@gmail.com"
+  }
+}

@@ -2,7 +2,7 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const _ = require('lodash')
-const { initEvents, setTriggerAndUpdatedField, } = require('../../utils/db')
+const { initEvents, setTriggerAndUpdatedField, getUsersByRole, } = require('../../utils/db')
 const { initReceivers, notificationSetting, handleNotification } = require('../../utils/notifications')
 const { emailSetting, handleEmail } = require('../../utils/emails')
 const { template1 } = require('../../emails/templates')
@@ -12,6 +12,7 @@ const db = admin.firestore()
 exports.onWriteAgenda = functions.firestore
     .document('Agenda/{taskId}')
     .onWrite(async (change, context) => {
+        return //#task: remove it
         const { taskId } = context.params
         const before = change.before.exists ? change.before.data() : null
         const after = change.after.exists ? change.after.data() : null
@@ -23,7 +24,11 @@ exports.onWriteAgenda = functions.firestore
         const event = setTriggerAndUpdatedField(events, before, after, agenda_updatedField_setter) //#SPECIFIC //exp: trigger = 'onUpdate'; field = 'name' 
 
         //Receivers
-        let receivers = after.project.subscribers.concat(after.project.client)
+        const admins = await getUsersByRole('Admin')
+        const respTechs = await getUsersByRole('Responsable technique')
+        const directeurComs = await getUsersByRole('Directeur commercial')
+        let receivers = [after.comContact, after.techContact, after.client]
+        receivers.concat(admins, respTechs, directeurComs)
         receivers = initReceivers(receivers, after.editedBy.id)
         receivers = agenda_messageReceivers_filter(receivers, after.natures) //#SPECIFIC
 

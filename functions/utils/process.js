@@ -80,9 +80,7 @@ function getCurrentPhase(process) {
 function getResponsable(subscribers, responsable) {
     subscribers = subscribers.filter((sub) => sub.role === responsable)
     const reponsable = subscribers[0]
-    console.log('RESPONSABLE', responsable)
-    const reponsableFullName = responsable.fullname
-    return reponsableFullName
+    return reponsable
 }
 
 module.exports = { isCurrentActionDifferent, getCurrentAction, getCurrentPhase, getResponsable }

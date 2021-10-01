@@ -1,7 +1,7 @@
 
 const appLink = `https://synergys.page.link/app`
 
-module.exports.template1 = function (emailBody, appLink) {
+function template1(emailBody, appLink) {
 	return `
     <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -719,7 +719,7 @@ ${emailBody}
     `
 }
 
-module.exports.welcomeEmail = function (email, password) {
+function welcomeEmail(email, password) {
 	const body = `
 	Bienvenue sur <strong><span style="color:#046307">Synergys </span>!</strong><br>
 	Votre compte vient d'être crée. L'application mobile est disponible sur Google play et sur App store.<br>
@@ -731,3 +731,5 @@ module.exports.welcomeEmail = function (email, password) {
 	`
 	return template1(body, appLink)
 }
+
+module.exports = { template1, welcomeEmail }

@@ -1,0 +1,1 @@
+// Remove access to intervenant if before.task.status === 'En cours' or 'En attente' && after.task.status === 'Terminé' or 'Annulé'

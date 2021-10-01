@@ -10,62 +10,32 @@ exports.onCreateUser = functions.firestore
     .document('newUsers/{userId}')
     .onCreate(async (snap, context) => {
         const { userId } = context.params
-        const userData = snap.data()
+        const user = snap.data()
 
-        var displayName = userData.isPro ? userData.denom : `${userData.prenom} ${userData.nom}`
-        const { role, email, password, isPro, denom, siret, nom, prenom, address, phone } = userData
+        const { role, email, password, isPro, denom, nom, prenom } = user
+        var displayName = isPro ? denom : `${prenom} ${nom}`
 
-        //Create auth account
-        const authUser = await admin.auth().createUser({
+        //1. Create auth account
+        const account = {
             uid: userId,
             disabled: false,
             displayName,
             email,
             password,
-        })
-
-        //Format user data
-        let user = {
-            fullName: displayName,
-            address,
-            phone,
-            email,
-            role,
-            isPro,
-            hasTeam: false,
-            deleted: false
         }
+        const authUser = await admin.auth().createUser(account)
 
-        if (userData.isPro) {
-            user.denom = denom
-            user.siret = siret
-        }
-
-        else {
-            user.nom = nom
-            user.prenom = prenom
-        }
-
-        //Create User/Client document 
-        if (userData.userType === 'utilisateur') {
-            await db.collection('Users').doc(authUser.uid).set(user)
-        }
-
-        else if (userData.userType === 'client') {
-            user.isProspect = false
-            await db.collection('Clients').doc(authUser.uid).set(user)
-        }
-
-        //Set role claim
+        //2. Set role claim
         let claim = setRoleCustomClaim(role)
-        await admin.auth().setCustomUserClaims(authUser.uid, claim)
+        await admin.auth().setCustomUserClaims(userId, claim)
 
-        //Delete the temp document
+        //3. Delete the temp document
         await db.collection('newUsers').doc(userId).delete()
 
-        //Send Welcome email to the new user
+        //4. Send Welcome email to the new user
         const subject = 'Bienvenue sur Synergys'
-        var welcomeEmail = welcomeEmail(email, password)
-        await wrapperSendMail(email, subject, welcomeEmail, [])
+        var welcomeMail = welcomeEmail(email, password)
+        await wrapperSendMail(email, subject, welcomeMail, [])
         return
     })
+
