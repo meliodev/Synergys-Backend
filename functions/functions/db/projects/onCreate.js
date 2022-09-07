@@ -14,6 +14,8 @@ exports.onCreateProject = functions.firestore
 
         const querySnapshot = await db.collection('Projects').where("client.id", "==", project.client.id).get()
         if (querySnapshot.docs.length > 1) return
+
+        //Create new client on 1st project
         const doc = await db.collection('Clients').doc(project.client.id).get()
         let client = doc.data()
         const isProspect = false
