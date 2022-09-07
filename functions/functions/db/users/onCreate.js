@@ -14,7 +14,7 @@ exports.onCreateUser = functions.firestore
             const { userId } = context.params
             const user = snap.data()
 
-            const { role, email, password, isPro, denom, nom, prenom } = user
+            const { role, email, password, isPro, denom, nom, prenom, phone } = user
             var displayName = isPro ? denom : `${prenom} ${nom}`
 
             //1. Create auth account
@@ -42,7 +42,7 @@ exports.onCreateUser = functions.firestore
             //5. Send SMS to download app
             if (role !== "Client") return
             const smsBody = "Télécharger l'application Synergys Connect via le lien:\n iOS: https://apps.apple.com/ma/app/synergys-connect/id1624026592?l=fr\n Android: https://play.google.com/store/apps/details?id=fr.groupe.synergys&hl=fr"
-            const smsToPhone = "+212-621581718"
+            const smsToPhone = phone
             await sendTwilioSMS(smsBody, smsToPhone)
 
             return
