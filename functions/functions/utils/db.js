@@ -105,6 +105,10 @@ function setRoleCustomClaim(role) {
             claim = { client: true }
             break;
 
+        case "Bureau d'étude":
+            claim = { designoffice: true }
+            break;
+
         default:
             console.log('Something wrong happened...')
     }

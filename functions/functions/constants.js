@@ -6,7 +6,8 @@ const roles = [
     { id: 'com', value: 'Commercial', level: 1 },
     { id: 'poseur', value: 'Poseur', level: 1 },
     { id: 'tech', value: 'Responsable technique', level: 2 },
-    { id: 'client', value: 'Client', level: 0 }
+    { id: 'client', value: 'Client', level: 0 },
+    { id: 'designoffice', value: "Bureau d'étude", level: 0 }
 ]
 
 module.exports = {
