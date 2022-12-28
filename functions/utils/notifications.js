@@ -8,10 +8,12 @@ const { getCurrentAction, getResponsable } = require('./process')
 async function getFcmTokens(receivers) {
     let tokens = []
     for (const receiver of receivers) {
+        console.log(receiver.id, "receiver ID")
         const tokensDoc = await db.collection('FcmTokens').doc(receiver.id).get()
         if (tokensDoc && tokensDoc.exists)
             tokens = tokens.concat(tokensDoc.data().tokens)
     }
+    console.log(tokens)
     return tokens
 }
 
@@ -60,12 +62,12 @@ async function notificationSetting(collection, receivers, event, docId, before, 
     const payload = { tokens, notification }
     return payload
 }
- 
+
 function setNotification(collection, event, docId, before, after, navParams) {
     const { trigger, field } = event
     const model = getNotificationsModel(collection, docId, before, after)
-    const isHandledUpdate = trigger === 'onUpdate' && model[trigger]
-    let notification = isHandledUpdate ? model[trigger][field] : model[trigger]
+    const isUpdate = trigger === 'onUpdate' && model[trigger]
+    let notification = isUpdate ? model[trigger][field] : model[trigger]
     if (!notification) return null
 
     const data = event.trigger === 'onArchive' ? null : navParams
@@ -185,6 +187,7 @@ function getNotificationsModel(collection, docId, before, after) {
             }
         }
     }
+
 
     return notificationsModel
 }

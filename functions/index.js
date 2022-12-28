@@ -7,9 +7,11 @@ admin.initializeApp()
 const { addAdminRole } = require('./auth/addAdminRole')
 const { setCustomClaim } = require('./auth/setCustomClaim')
 
+const { onWriteProcess } = require('./db/process/onWrite') //#toTest = 1
 const { onCreateProject } = require('./db/projects/onCreate') //#toTest = 1
 const { onWriteProject } = require('./db/projects/onWrite') //#toTest = 1
 const { onUpdateProject } = require('./db/projects/onUpdate') //#tested (#task: Define useful notifications to avoid spam)
+const { onCreateRequest } = require('./db/requests/onCreate') //#tested
 const { onUpdateRequests } = require('./db/requests/onUpdate') //#tested
 const { onCreateUser } = require('./db/users/onCreate') //#tested 
 const { onUpdateUser } = require('./db/users/onUpdate') //#tested
@@ -19,17 +21,22 @@ const { onWriteAgenda } = require('./db/agenda/onWrite') //#toTest
 const { onWriteOrder } = require('./db/orders/onWrite') //#toTest 
 const { sendEmail } = require('./nodeMailer/sendEmail') //#toTest 
 const { sendCode } = require('./twilio/sendCode') //#toTest 
-const { verifyCode } = require('./twilio/verifyCode') //#toTest 
-const { auth } = require('firebase-admin')
+const { verifyCode, test } = require('./twilio/verifyCode') //#toTest 
+
+
+
+exports.test = test
 
 //Auth
 exports.addAdminRole = addAdminRole
 exports.setCustomClaim = setCustomClaim
 
 //Triggers
+exports.onWriteProcess = onWriteProcess
 exports.onCreateProject = onCreateProject
 exports.onWriteProject = onWriteProject
 exports.onUpdateProject = onUpdateProject
+exports.onCreateRequest = onCreateRequest
 exports.onUpdateRequests = onUpdateRequests
 exports.onCreateUser = onCreateUser
 exports.onUpdateUser = onUpdateUser

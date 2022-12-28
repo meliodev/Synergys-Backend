@@ -46,12 +46,12 @@ exports.onWriteProject = functions.firestore
         //2. Notifications & Emails
         //Set receivers
         //const admins = await getUsersByRole('Admin')
-        const respTechs = await getUsersByRole('Responsable technique')
-        const directeurComs = await getUsersByRole('Directeur commercial')
+        // const respTechs = await getUsersByRole('Responsable technique')
+        // const directeurComs = await getUsersByRole('Directeur commercial')
         let receivers = [after.comContact, after.client] //#task: add intervenant if he exists
-        if (after.techContact.id !== "")
-            receivers.push(after.techContact)
-        receivers = receivers.concat(respTechs, directeurComs)
+        // if (after.techContact.id !== "")
+        //     receivers.push(after.techContact)
+        //receivers = receivers.concat(respTechs, directeurComs)
         //receivers = initReceivers(receivers, after.editedBy.id)
         receivers = project_messageReceivers_filter(receivers, event, before, after)
 
