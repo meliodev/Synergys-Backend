@@ -19,6 +19,7 @@ const { onDeleteUser } = require('./db/users/onDelete') //#deprecated
 const { onUpdateClient } = require('./db/clients/onUpdate') //#tested
 const { onWriteAgenda } = require('./db/agenda/onWrite') //#toTest 
 const { onWriteOrder } = require('./db/orders/onWrite') //#toTest 
+const { onCreateAllMessages } = require('./db/AllMessages/onCreate') //#toTest 
 const { sendEmail } = require('./nodeMailer/sendEmail') //#toTest 
 const { sendCode } = require('./twilio/sendCode') //#toTest 
 const { verifyCode, test } = require('./twilio/verifyCode') //#toTest 
@@ -44,6 +45,7 @@ exports.onDeleteUser = onDeleteUser
 exports.onUpdateClient = onUpdateClient
 exports.onWriteAgenda = onWriteAgenda
 exports.onWriteOrder = onWriteOrder
+exports.onCreateAllMessages = onCreateAllMessages
 
 //Nodemailer
 exports.sendEmail = sendEmail

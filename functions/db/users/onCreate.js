@@ -41,7 +41,7 @@ exports.onCreateUser = functions.firestore
 
             //5. Send SMS to download app
             if (role !== "Client") return
-            const smsBody = "Télécharger l'application Synergys Connect via le lien:\n iOS: https://apps.apple.com/ma/app/synergys-connect/id1624026592?l=fr\n Android: https://play.google.com/store/apps/details?id=fr.groupe.synergys&hl=fr"
+            const smsBody = `utilisateur: ${email}\nmot de passe: ${password}\nTélécharger l'application Synergys Connect via le lien:\n iOS: https://apps.apple.com/ma/app/synergys-connect/id1624026592?l=fr\n Android: https://play.google.com/store/apps/details?id=fr.groupe.synergys&hl=fr`
             const smsToPhone = phone
             await sendTwilioSMS(smsBody, smsToPhone)
 

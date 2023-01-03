@@ -8,30 +8,29 @@ const { template1 } = require('../../emails/templates')
 
 const db = admin.firestore()
 
-exports.onCreateRequest = functions.firestore
-    .document('Requests/{requestId}')
+exports.onCreateAllMessages = functions.firestore
+    .document('Messages/{messageId}/AllMessages/{allMessagesId}')
     .onWrite(async (change, context) => {
 
-        const { requestId } = context.params
+        const { messageId, allMessagesId } = context.params
 
         const before = change.before.exists ? change.before.data() : null
         const after = change.after.exists ? change.after.data() : null
         if (!after || before) return //deleted or updated
-        if (after.type === "project") return
 
-        //Notify the commercial contact of the concerned project that a ticket was created
-        var receivers = [after.project.comContact]
-        const notificationTitle = `Nouveau ticket:`
-        const notificationBody = `Le client ${after.client.fullName} a soumis un ticket.`
-        const navParams = { screen: 'CreateTicketReq', RequestId: requestId }
+        //Notify the receiver about new message coming
+        var { receivers, message, sender } = after
+        const notificationTitle = sender.fullName
+        const notificationBody = message
+        const navParams = { screen: 'ViewMessage', MessageId: messageId }
 
         const notification = {
             title: notificationTitle,
             body: notificationBody,
-            collection: 'requests',
+            collection: 'AllMessages',
             action: 'update',
             data: navParams,
-            channelId: "Requests"
+            channelId: "AllMessages"
         }
 
         const tokens = await getFcmTokens(receivers)
@@ -39,7 +38,7 @@ exports.onCreateRequest = functions.firestore
         await handleNotification(receivers, notificationPayload)
 
         const appLinkRoot = `https://synergys.page.link/?link=https%3A%2F%2Fsynergys.page.link%2Fapp`
-        const appLink = `${appLinkRoot}%3FrouteName%3DProcess&&ProcessId%3D${requestId}`
+        const appLink = `${appLinkRoot}%3FrouteName%3DProcess&&ProcessId%3D${allMessagesId}`
         const html = template1(notificationBody, appLink)
         const email = { subject: notificationTitle, html }
         const receiversEmails = receivers.map((receiver) => receiver.email)
@@ -47,7 +46,7 @@ exports.onCreateRequest = functions.firestore
             email,
             receivers: receiversEmails
         }
-       //await handleEmail(emailPayload)
+        //await handleEmail(emailPayload)
         return
     })
 

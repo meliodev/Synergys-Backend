@@ -33,19 +33,19 @@ exports.onWriteProcess = functions.firestore
 
         // //2. Notifications & Emails
         const project = (await (db.collection("Projects").doc(projectId).get())).data()
-        const admin = { email: "sa.lyoussi@gmail.com", fullName: "Salim Lyoussi", id: "GS-US-xQ6s", role: "Admin" }
-
+        //const admin = { email: "sa.lyoussi@gmail.com", fullName: "Salim Lyoussi", id: "GS-US-xQ6s", role: "Admin" }
+        const { client, comContact } = project
         //NOTIFY CLIENT
         if (latestAction_after.responsable === "Client") {
             var notificationBody = `Veuillez effectuer l'action: ${latestAction_after.title}`
-            var receivers = [project.client]
+            var receivers = [client]
         }
 
         //NOTIFY COMMERCIAL
         else {
             var notificationBody = `L'action "${latestAction_before.title}" a été finalisée.`
             //var receivers = [admin]
-            var receivers = [project.comContact]
+            var receivers = [comContact, client]
         }
 
         const notificationTitle = `Projet ${projectId}:`
@@ -78,38 +78,6 @@ exports.onWriteProcess = functions.firestore
     })
 
 
-//Specific for project collection
-function project_updatedField_setter(trigger, before, after) {
-    let field = ''
-    if (trigger === 'onUpdate') {
-        if (before.state !== after.state) field = 'state'
-        else if (before.step !== after.step) field = 'step'
-        else if (before.address.description !== after.address.description) field = 'address'
-        else if (!_.isEqual(before.bill, after.bill)) field = 'bill'
-        else if (!_.isEqual(before.comContact, after.comContact)) field = 'comContact'
-        else if (!_.isEqual(before.techContact, after.techContact)) field = 'techContact'
-        //else if (isCurrentActionDifferent(before.process, after.process)) field = 'process'
-    }
-    return field
-}
-
-function project_messageReceivers_filter(receivers, event, before, after) {
-    const { trigger, field } = event
-
-    if (trigger === 'onUpdate') {
-        if (event.field === 'comContact')
-            receivers = [after.comContact]
-        else if (event.field === 'techContact')
-            receivers = [after.techContact]
-
-        // //Notify the list of concerned people ("notified" attribute)
-        // else if (event.field === 'process') {
-        //     const currentPhase = getCurrentPhase(after.process)
-        //     receivers = receivers.filter((receiver) => after.process[currentPhase].followers.includes(receiver.role))
-        // }
-    }
-    return receivers
-}
 
 
 
