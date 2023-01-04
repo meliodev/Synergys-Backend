@@ -85,19 +85,19 @@ function setRoleCustomClaim(role) {
             claim = { backoffice: true }
             break;
 
-        case 'Directeur commercial':
+        case 'Service commercial':
             claim = { dircom: true }
             break;
 
-        case 'Commercial':
+        case "Chargé d'affaires":
             claim = { com: true }
             break;
 
-        case 'Responsable technique':
+        case 'Service technique':
             claim = { tech: true }
             break;
 
-        case 'Poseur':
+        case 'Équipe technique':
             claim = { poseur: true }
             break;
 

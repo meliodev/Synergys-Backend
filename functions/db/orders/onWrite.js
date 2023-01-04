@@ -30,8 +30,8 @@ exports.onWriteOrder = functions.firestore
         //2. Notifications & Emails
         //Set receivers
         const admins = await getUsersByRole('Admin')
-        const respTechs = await getUsersByRole('Responsable technique')
-        const directeurComs = await getUsersByRole('Directeur commercial')
+        const respTechs = await getUsersByRole('Service technique')
+        const directeurComs = await getUsersByRole('Service commercial')
         let receivers = []
         receivers = receivers.concat(admins, respTechs, directeurComs)
         //receivers = initReceivers(receivers, after.editedBy.id)
